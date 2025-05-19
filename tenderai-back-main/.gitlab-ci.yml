@@ -1,0 +1,60 @@
+variables:
+  GIT_DEPTH: 0
+  GIT_STRATEGY: clone
+  WEB_LOCATION: /home/projects/tender-back
+
+# cache:
+#   key:
+#     files:
+#       - package-lock.json
+#   paths:
+#     - node_modules/
+
+stages:
+  - build
+  - deploy
+
+.templates:
+  rules:
+    rules-prod: &rules-prod
+      - if: $CI_COMMIT_REF_NAME == "main"
+        when: always
+  scripts:
+    setup-git: &setup-git |-
+      git config --global user.email "my@foowe.com"
+      git config --global user.name "Gitlab CI"
+    copy-files: &copy-files |-
+      find $DIST_LOCATION -type f -mtime +30 -exec rm {} \;
+      cp -rf . $DIST_LOCATION
+
+.build-production:
+  rules: *rules-prod
+  tags:
+    - eu-host
+  stage: build
+  script:
+    - echo "WEB_LOCATION is set to $WEB_LOCATION"
+    - DIST_LOCATION=$WEB_LOCATION
+    - *setup-git
+    - *copy-files
+    - echo "Build completed successfully"
+
+.deploy-portainer:
+  stage: deploy
+  image: curlimages/curl
+  cache: []
+  script:
+    - curl "${PORTAINER_WEBHOOK}" -X POST --fail
+    - echo "Deployment triggered via Portainer webhook"
+
+build:production:
+  extends: .build-production
+  variables: { NPM_BUILD_SCRIPT: build-production }
+
+deploy:production:
+  extends: .deploy-portainer
+  needs: [build:production]
+  environment:
+    name: production
+    url: https://tender-api.foowe.ru
+    deployment_tier: production

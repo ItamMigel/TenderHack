@@ -1,0 +1,12 @@
+aiohttp
+aiohttp_cors
+scipy
+numpy
+transformers
+accelerate
+coqui-tts
+pydub
+simpleaudio
+langchain
+langchain_core
+langchain_huggingface

@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1G
+    environment:
+      MYSQL_ROOT_PASSWORD: root19129
+      MYSQL_DATABASE: tenderai
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - /home/projects/mysql/conf.d:/etc/mysql/conf.d
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  frontend:
+    image: nginx:latest
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: any
+      resources:
+        limits:
+          memory: 256M
+    volumes:
+      - type: bind
+        source: /home/projects/tender-front
+        target: /usr/share/nginx/html
+        bind:
+          create_host_path: true
+    ports:
+      - "80:80"
+    depends_on:
+      - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  backend:
+    image: python:3.9
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 512M
+    environment:
+      DATABASE_URL: mysql+pymysql://user:user@mysql:3306/tenderai
+      PORT: 8000
+      HOST: 0.0.0.0
+    volumes:
+      - type: bind
+        source: /home/projects/tender-back
+        target: /app
+        bind:
+          create_host_path: true
+    command: >
+      bash -c "cd /app && pip install -r requirements.txt && 
+              uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mysql_data:
