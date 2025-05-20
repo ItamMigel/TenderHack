@@ -97,8 +97,12 @@ project-root/
 
 
 ![Фотографии сервиса:](photo_readme/photo_2025-04-03_20-26-40.jpg)
+![Фотографии сервиса:](photo_readme/photo_2025-04-05_17-20-06.jpg)
+![Фотографии сервиса:](photo_readme/photo_2025-04-06_13-21-42.jpg)
+![Фотографии сервиса:](photo_readme/photo_2025-04-06_13-44-51.jpg)
 
-[Ссылка на скринкаст](https://drive.google.com/drive/folders/14tOxABlJqHAFomjVzVJjN1Yqsbqaber8?hl=ru)
+## ▶️ Скринкаст работы проекта  
+[**Перейти к видео на Google Drive →**](https://drive.google.com/drive/folders/14tOxABlJqHAFomjVzVJjN1Yqsbqaber8?hl=ru)
 
 ---
 
