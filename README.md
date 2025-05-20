@@ -96,6 +96,7 @@ project-root/
 # 7. Демонстрация работы проекта
 
 
+![Фотографии сервиса:](photo_readme/photo_2025-04-03_20-26-40.jpg)
 
 [Ссылка на скринкаст](https://drive.google.com/drive/folders/14tOxABlJqHAFomjVzVJjN1Yqsbqaber8?hl=ru)
 
